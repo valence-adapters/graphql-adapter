@@ -1,0 +1,21 @@
+<!-- GraphQL Adapter Source Configurator -->
+<template>
+	<template if:false={definitionsLoaded}>
+		<p class="slds-m-vertical_small">Fetching possible arguments from the GraphQL API schema endpoint...</p>
+	</template>
+	<template if:true={definitionsLoaded}>
+		<template if:true={noDefinitionsAvailable}>
+			<p class="slds-m-vertical_small">This particular query has no parameters that it can be passed, and therefore is not configurable.</p>
+		</template>
+		<template if:false={noDefinitionsAvailable}>
+			<p class="slds-m-vertical_small">From here you can set up any of the extra parameters that you would like passed to GraphQL whenever this Link runs.</p>
+			<lightning-layout multiple-rows="true">
+				<template for:each={definitions} for:item="argument">
+					<lightning-layout-item size="12" key={argument.name} class="slds-p-around_medium">
+						<c-graph-q-l-argument-editor argument={argument} onupdateargument={updateArgument} ondeleteargument={deleteArgument}></c-graph-q-l-argument-editor>
+					</lightning-layout-item>
+				</template>
+			</lightning-layout>
+		</template>
+	</template>
+</template>

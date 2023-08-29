@@ -1,0 +1,46 @@
+<!-- GraphQL Argument Editor -->
+<template>
+	<div class="slds-media slds-media_center">
+		<div class="slds-media__figure">
+			<lightning-button-icon
+				if:true={argument.isList}
+				icon-name="utility:add"
+				title="Add item"
+				onclick={addValue}
+				size="x-small"></lightning-button-icon>
+		</div>
+		<div class="slds-media__body">
+			<p class="slds-text-title_caps"><span if:true={argument.isRequired} class="required">*</span>{argument.name}</p>
+		</div>
+	</div>
+	<div>
+		<template if:true={argument.isList}>
+			<template for:each={argument.value} for:item="value" for:index="index">
+				<c-graph-q-l-value-editor
+					key={value}
+					data-index={index}
+					name={argument.name}
+					default-value={argument.defaultValue}
+					simple-type={argument.simpleType}
+					value={value}
+					is-enum={argument.isEnum}
+					enum-values={argument.enumValues}
+					is-required={argument.areItemsRequired}
+					onupdatevalue={updateValue}
+					ondeletevalue={deleteValue}></c-graph-q-l-value-editor>
+			</template>
+		</template>
+		<template if:false={argument.isList}>
+			<c-graph-q-l-value-editor
+				name={argument.name}
+				default-value={argument.defaultValue}
+				simple-type={argument.simpleType}
+				value={argument.value}
+				is-enum={argument.isEnum}
+				enum-values={argument.enumValues}
+				is-required={argument.isRequired}
+				onupdatevalue={updateValue}
+				ondeletevalue={deleteValue}></c-graph-q-l-value-editor>
+		</template>
+	</div>
+</template>

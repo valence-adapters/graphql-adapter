@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Run this script to set up a scratch org for development
+
+echo "Creating scratch org..."
+sfdx force:org:create -f config/project-scratch-def.json -v 'ValenceProd' -a 'valencePluginDev'
+
+echo "Installing latest Valence version..."
+latestValence=$(<../latest_valence_package_id)
+sfdx force:package:install --package "${latestValence}" --wait 20 -u valencePluginDev
+
+echo "Pushing source code..."
+sfdx force:source:push -u valencePluginDev
+
+echo "Assigning Valence permission set to default user..."
+sfdx force:user:permset:assign -n Valence_User -u valencePluginDev
+
+echo "Setting Debug Mode on User..."
+sfdx force:data:record:update -u valencePluginDev -s User -w "Name='User User'" -v "UserPreferencesUserDebugModePref=true"
+
+echo "Opening org..."
+sfdx force:org:open -u valencePluginDev -p lightning/n/valence__Valence
