@@ -4,6 +4,21 @@
 @IsTest
 private class GraphQLAdapterTests implements HttpCalloutMock {
 
+	private static valence.LinkContext context;
+
+	static {
+		context = new valence.LinkContext();
+		context.linkName = 'Alpha';
+		context.linkSourceName = 'accounts';
+		context.batchSizeLimit = 2;
+		context.mappings = new Map<String, valence.Mapping>{
+			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
+		};
+		context.suggestedQueryFields = new List<valence.FieldPath>{
+			valence.FieldPath.buildPath('name')
+		};
+	}
+
 	/**
 	 * Handle generating fake responses to our outbound HTTP requests.
 	 *
@@ -567,13 +582,7 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setNamedCredential('planFetchAcknowledgements');
 		adapter.setSourceConfiguration(null, null);
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
 		context.linkSourceName = 'acknowledgements';
-		context.batchSizeLimit = 2;
-		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
-		};
 
 		valence.FetchStrategy strategy = adapter.planFetch(context);
 
@@ -587,14 +596,6 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		GraphQLAdapter adapter = new GraphQLAdapter();
 		adapter.setNamedCredential('planFetchAccountsNoRecords');
 		adapter.setSourceConfiguration(null, null);
-
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
-		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
-		};
 
 		valence.FetchStrategy strategy = adapter.planFetch(context);
 
@@ -612,14 +613,6 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setNamedCredential('planFetchAccountsImmediate');
 		adapter.setSourceConfiguration(null, null);
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
-		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
-		};
-
 		valence.FetchStrategy strategy = adapter.planFetch(context);
 
 		System.assertEquals(true, adapter.currentInnerTypeIsPageable);
@@ -633,14 +626,6 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setNamedCredential('planFetchAccountsScopes');
 		adapter.setSourceConfiguration(null, null);
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
-		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
-		};
-
 		valence.FetchStrategy strategy = adapter.planFetch(context);
 
 		System.assertEquals(true, adapter.currentInnerTypeIsPageable);
@@ -653,14 +638,6 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		GraphQLAdapter adapter = new GraphQLAdapter();
 		adapter.setNamedCredential('fetchRecordsPageableImmediate');
 		adapter.setSourceConfiguration(null, '{"arguments":[{"name":"statuses","fullType":"[AccountStatus!]","value":["OPEN","PENDING"]}]}');
-
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
-		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null)
-		};
 
 		// we plan first so that currentInnerTypeIsPageable is set appropriately
 		valence.FetchStrategy strategy = adapter.planFetch(context);
@@ -683,13 +660,13 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setSourceConfiguration(null, null);
 		adapter.currentInnerTypeIsPageable = true;
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
 		context.mappings = new Map<String, valence.Mapping>{
 			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null),
 			'two' => valence.ValenceTestUtil.createTestMapping('two', 'balance', null, null)
+		};
+		context.suggestedQueryFields = new List<valence.FieldPath> {
+			valence.FieldPath.buildPath('name'),
+			valence.FieldPath.buildPath('balance')
 		};
 
 		List<valence.RecordInFlight> records = adapter.fetchRecords(context, null);
@@ -714,13 +691,13 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setSourceConfiguration(null, null);
 		adapter.currentInnerTypeIsPageable = true;
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
-		context.linkSourceName = 'accounts';
-		context.batchSizeLimit = 2;
 		context.mappings = new Map<String, valence.Mapping>{
-			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', 'something', null),
-			'two' => valence.ValenceTestUtil.createTestMapping('two', 'balance', 'something', null)
+			'one' => valence.ValenceTestUtil.createTestMapping('one', 'name', null, null),
+			'two' => valence.ValenceTestUtil.createTestMapping('two', 'balance', null, null)
+		};
+		context.suggestedQueryFields = new List<valence.FieldPath> {
+			valence.FieldPath.buildPath('name'),
+			valence.FieldPath.buildPath('balance')
 		};
 
 		try {
@@ -740,13 +717,14 @@ private class GraphQLAdapterTests implements HttpCalloutMock {
 		adapter.setNamedCredential('fetchRecordsNonPageable');
 		adapter.setSourceConfiguration(null, null);
 
-		valence.LinkContext context = new valence.LinkContext();
-		context.linkName = 'Alpha';
 		context.linkSourceName = 'acknowledgements';
-		context.batchSizeLimit = 2;
 		context.mappings = new Map<String, valence.Mapping>{
 			'one' => valence.ValenceTestUtil.createTestMapping('one', 'id', null, null),
 			'two' => valence.ValenceTestUtil.createTestMapping('two', 'description', null, null)
+		};
+		context.suggestedQueryFields = new List<valence.FieldPath> {
+			valence.FieldPath.buildPath('id'),
+			valence.FieldPath.buildPath('description')
 		};
 
 		List<valence.RecordInFlight> records = adapter.fetchRecords(context, null);

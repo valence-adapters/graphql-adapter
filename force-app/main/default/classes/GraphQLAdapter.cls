@@ -712,10 +712,10 @@ global with sharing class GraphQLAdapter implements valence.NamedCredentialAdapt
 
 		// turn a flat list of mappings into a tree
 		Map<String, Object> mappingTree = new Map<String, Object>();
-		for(valence.Mapping mapping : context.mappings.values()) {
+		for(valence.FieldPath fieldPath : context.suggestedQueryFields) {
 
 			Map<String, Object> pointer = mappingTree; // helps us recurse down into the tree
-			for(valence.Field field : mapping.sourceFieldPath.getSequence()) { // iterate through the source path chain and drill into our map one layer for each field
+			for(valence.Field field : fieldPath.getSequence()) { // iterate through the source path chain and drill into our map one layer for each field
 				if(!pointer.containsKey(field.name)) {
 					pointer.put(field.name, new Map<String, Object>());
 				}
